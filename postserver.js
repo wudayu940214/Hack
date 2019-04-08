@@ -50,13 +50,17 @@ var server = http.createServer(function (request, response) {
                                 var tweet = data.statuses[index];
                                 console.log(tweet.text + "hhhhh");
                                 // var datetime=formatDateTime(tweet.created_at);
-                                tweetList.push({'id': tweet.id_str,'userId': tweet.user.id, 'name': tweet.user.name, 'text': tweet.text, 'retweet_count': tweet.retweet_count});
+                                //if(tweet.place.name != null && tweet.coordinates.coordinates != null)
+                                    //tweetList.push({'id': tweet.id_str,'userId': tweet.user.id, 'name': tweet.user.name, 'text': tweet.text, 'retweet_count': tweet.retweet_count, 'place': tweet.place.name, "coordinates": tweet.coordinates.coordinates});
+                                //else
+                                     tweetList.push({'id': tweet.id_str,'userId': tweet.user.id, 'name': tweet.user.name, 'text': tweet.text, 'retweet_count': tweet.retweet_count});
                                 //storeIntoDb(tweet.id_str, tweet.user.id, tweet.user.name, datetime, utf.encode(tweet.text), retweet_count);
                     }
                     resultList.push({'tweetList':tweetList});
                     //response.write(JSON.stringify(resultList));
                     // response.end();
-
+                    fs.writeFile("twit.txt", JSON.stringify(resultList), function(err, data){
+                    });
                     response.end('Hello ' + POST.keyword +  JSON.stringify(resultList) + '\n');
                 }
             });
