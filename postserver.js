@@ -40,7 +40,7 @@ var server = http.createServer(function (request, response) {
 
             client.get('search/tweets', {
                 q: POST.keyword,
-                count: 300
+                count: 1000
             }, function (err, data) {
                 if (err) {
                     console.log("err" + err);
@@ -48,9 +48,17 @@ var server = http.createServer(function (request, response) {
                     for (var index in data.statuses) {
                         
                                 var tweet = data.statuses[index];
-                                console.log(tweet.text + "hhhhh");
-                                // var datetime=formatDateTime(tweet.created_at);
+                                //console.log(tweet.text + "hhhhh");
+
+                                 // var datetime=formatDateTime(tweet.created_at);
                                 tweetList.push({'id': tweet.id_str,'userId': tweet.user.id, 'name': tweet.user.name, 'text': tweet.text, 'retweet_count': tweet.retweet_count});
+                                fs.appendFile("./output.txt",tweetList.,function(err){
+                                    if(err){
+                                        console.log(err);
+                                    }else{
+                                        console.log("file writes sucess!!")
+                                    }
+                                })
                                 //storeIntoDb(tweet.id_str, tweet.user.id, tweet.user.name, datetime, utf.encode(tweet.text), retweet_count);
                     }
                     resultList.push({'tweetList':tweetList});
