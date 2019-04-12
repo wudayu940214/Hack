@@ -40,7 +40,8 @@ var server = http.createServer(function (request, response) {
 
             client.get('search/tweets', {
                 q: POST.keyword,
-                count: 1000
+                count: 100,
+                lang: "en"
             }, function (err, data) {
                 if (err) {
                     console.log("err" + err);
@@ -49,16 +50,22 @@ var server = http.createServer(function (request, response) {
                         
                                 var tweet = data.statuses[index];
                                 //console.log(tweet.text + "hhhhh");
-
                                  // var datetime=formatDateTime(tweet.created_at);
-                                tweetList.push({'id': tweet.id_str,'userId': tweet.user.id, 'name': tweet.user.name, 'text': tweet.text, 'retweet_count': tweet.retweet_count});
-                                fs.appendFile("./output.txt",tweetList.,function(err){
-                                    if(err){
-                                        console.log(err);
-                                    }else{
-                                        console.log("file writes sucess!!")
-                                    }
-                                })
+                                tweetList= {'id': tweet.id_str, 'name': tweet.user.name, 'text': tweet.text};
+                                var twitJson = JSON.stringify(tweetList)+"\n";
+                                var ranges = [
+                                    '\ud83c[\udf00-\udfff]',
+                                    '\ud83d[\udc00-\ude4f]',
+                                    '\ud83d[\ude80-\udeff]'
+                                ];
+                                twitJson = twitJson.replace(new RegExp(ranges.join('|'), 'g'), '');
+                                
+                                var elastic = {"index": {"_id": index, "_index" : "twitter","_type" : "tweet"}}
+                                elastic = JSON.stringify(elastic)+"\n";
+                                //fs.unlink("./a.json")
+                                fs.appendFileSync("./a.json",elastic)
+                                fs.appendFileSync("./a.json",twitJson)
+
                                 //storeIntoDb(tweet.id_str, tweet.user.id, tweet.user.name, datetime, utf.encode(tweet.text), retweet_count);
                     }
                     resultList.push({'tweetList':tweetList});
