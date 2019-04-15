@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="">
+    <head>
+
+    <meta charset="utf8mb4">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Football Transfer Infomation</title>
+
+<link rel="stylesheet" href="source/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="source/css/main.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="source/js/jquery.min.js"></script>
+    <script type="text/javascript" src="source/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script async src="http://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </head>
+    <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+    <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    </button>
+    </nav>
+
+<div class="jumbotron text-center">
+
+<form action="" method="" id="SearchForm">
+    <div class="input-group">
+
+    <div class="info">
+    </div>
+
+    <div class="info" >
+    <label for="players">Keyword</label>
+    <input type="text" name="keyword" class="input" id='keyword' >
+    </div>
+
+    </div>
+</form>
+
+
+<div class="input-group-btn">
+    <button class="btn btn-danger" onclick="myFunction()">SEARCH</button>
+</div>
+
+    </div>
+
+<script>
+function myFunction() {
+        var date = new Array();
+        var messageLink = new Array();
+        var keyword=document.getElementById("keyword").value;
+        console.log('keyword '+keyword);
+        $.ajax({
+            url:'http://127.0.0.1:3000',
+            type: 'POST',
+            data: {'keyword':keyword},
+            datatype: 'json',
+            success: function(data){
+                    if (data.length > 0) {
+                    // $('#tableResult tbody').empty();
+                        for (var i in data[0].tweetList){
+                            fromAPI++;
+                            messageLink.push(data[0].tweetList[i].id);
+                            var time =formatDate(data[0].tweetList[i].time);
+                            date.push(time);
+                        }
+
+                    sparqlQueryJson(query, endpoint, myCallback, true);
+                    embed(messageLink.sort());
+                    console.log("newdate: ", date);
+            },
+            error: function(xhr,status,error){
+                console.log('error '+error.message);
+                alert('error connecting');
+            }
+        }); // ajax end
+
+            return false;
+}
+
+var embed = function (messageLink) { //embed each twitter 
+
+                    for(var i in messageLink){
+                        $.getJSON("https://api.twitter.com/1/statuses/oembed.json?id="+messageLink[i]+"&align=center&callback=?&hide_media=true&data_cards=hidden&conversation = none",
+                            function(data){
+                                //$('#tweet').empty();
+                                $('#tweet').append(data.html);});
+                    }
+                    //console.log('running embed test function');
+
+                }
+
+function formatDate(time) {
+    var today = new Date(time);
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+        dd = '0' + dd
+    }
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+    return (yyyy + '-' + mm + '-' + dd);
+}
+
+function sparqlQueryJson(queryStr, endpoint, callback, isDebug) {
+      var querypart = "query=" + escape(queryStr);
+      
+      // Get our HTTP request object.
+      var xmlhttp = null;
+      if(window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+     } else if(window.ActiveXObject) {
+       // Code for older versions of IE, like IE6 and before.
+       xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+     }
+    
+     // Set up a POST with JSON result format.
+     xmlhttp.open('POST', endpoint, true); // GET can have caching probs, so POST
+     xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+     xmlhttp.setRequestHeader("Accept", "application/sparql-results+json");
+    
+     // Set up callback to get the response asynchronously.
+     xmlhttp.onreadystatechange = function() {
+       if(xmlhttp.readyState == 4) {
+       callback(xmlhttp.responseText);
+       }
+     };
+     // Send the query to the endpoint.
+     xmlhttp.send(querypart);
+    
+     // Done; now just wait for the callback to be called.
+    }
+function myCallback(str) {
+      var keyword_input=document.getElementById("keyword").value;
+      keyword_input=keyword_input.replace(/\"/g,'');
+      keyword_input=keyword_input.replace(/\s/g,'');
+      // Convert result to JSON
+      var jsonObj = eval('(' + str + ')');
+      // Build up a table of results.
+      var result = " <table border='2' cellpadding='9' align='center'>" ;
+      var showPlayer='';
+
+    for (var i=0;i<list_name.length;i++){
+        for (var j=0;j<player_input.length;j++){
+            if(list_name[i].screen_name.toLowerCase()==player_input[j].toLowerCase()){
+            showPlayer= list_name[i].name;
+            }
+        
+        }
+        }
+        console.log('screen_name '+showPlayer);
+        
+         for(var i = 0; i<  jsonObj.results.bindings.length; i++) {
+        
+            //if player_input in manutd and chelsea
+            if(jsonObj.results.bindings[i].Player_Name.value==showPlayer){
+                  var position=jsonObj.results.bindings[i].position.value;
+                position=position.replace("http://dbpedia.org/resource/","");
+                var current_team=jsonObj.results.bindings[i].current_team.value;
+                current_team=current_team.replace("http://dbpedia.org/resource/","");
+                var result='<table border=1  align="center" ><tr><th>Name</th><th>Birth</th><th>Position</th> <th>Current Team</th><tr><td>'+jsonObj.results.bindings[i].Player_Name.value+'</td><td>'+jsonObj.results.bindings[i].date.value+'</td><td>'+position+'</td><td>'+ current_team+'</td></table>';            
+            sparqlQueryJson(query, endpoint, myCallback, true);
+          }
+          
+        } 
+        document.getElementById("results").innerHTML = result;
+     }
+</script>
+</div>
+</body>
+</html>
+
