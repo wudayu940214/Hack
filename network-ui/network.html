@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>form</title>
+    <link rel="stylesheet" href="../node_modules/semantic-ui/dist/semantic.min.css"/>
+    <link rel="stylesheet" href="network.css"/>
+    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../node_modules/semantic-ui/dist/semantic.min.js"></script>
+    <script type="text/javascript" src="../node_modules/echarts/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div class="ui container" style="margin-top: 3em;">
+        <h1>Social Network Analysis</h1>
+        <div style="margin-top: 3em" class="ui action input">
+          <input type="text" placeholder="Search...">
+          <select class="ui compact selection dropdown">
+            <option selected="" value="twitSA">Twitter Sentiment Analysis</option>
+            <option value="twitWC">Twitter Words Cloud</option>
+            <option value="zhihuNET">Zhihu Network</option>
+          </select>
+          <button class="ui icon button">
+            <i class="search icon"></i>
+          </button>
+        </div>
+    </div>
+    <div id="networkContainer" style="height: 300px; margin-top: 3em"></div>
+    <script type="text/javascript" src="network.js"></script>
+</body>
+</html>
