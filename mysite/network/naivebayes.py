@@ -175,16 +175,17 @@ def sentiment_analysis(keyword, name, period):
 	#test_entry2 = ['abort', 'me']
 	#test_context = set([])
 	textContentList = queryES(keyword, name, period)
-	print("*" *30)
-	print(keyword + " " + name + " " + period)
-	print(str(textContentList))
+	# print("*" *30)
+	# print(keyword + " " + name + " " + period)
+	# print(str(textContentList))
 	for line in textContentList:
-		print("sdfdsfsdfsdfsf" + line)
-		reg = re.compile('\\W*')
-		solveData = reg.split(line['_source']['text'])
-		print("wangbadanwangbadan"+solveData[0])
-		result =classifyNB(np.array(set_of_words2vec(my_vocab_list, solveData)), p0V, p1V, pAb)
-		print(result)
+		print("sdfdsfsdfsdfsf" + str(line))
+		# reg = re.compile('\\W*')
+		# solveData = reg.split(line['_source']['text'])
+		# print("wangbadanwangbadan"+solveData[0])
+		solveData=json.loads(json.dumps(line))
+		result =classifyNB(np.array(set_of_words2vec(my_vocab_list, solveData['_source']['text'])), p0V, p1V, pAb)
+		# print(result)
 		positiveCount = 0
 		negativeCount = 0
 		neutralCount = 0
