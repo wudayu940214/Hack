@@ -12,7 +12,6 @@ $("button#search").on("click", function(event){
     $("#networkContainer").empty();
     $("#loading").addClass("active");
 	var method = $('select').dropdown('get value');
-    // var dataType = method === "wc"? "image/jpeg" : "json";
 	$.ajax({
 		url: "responseLoad",
 		type: "POST",
@@ -22,8 +21,7 @@ $("button#search").on("click", function(event){
             timeperiod: $("input[name='datetimes']").val(), 
             username: $("input[name='username']").val()
         },
-        // dataType: "json",
-		timeout: 8000,
+        timeout: 8000,
 		success: function(data) {
 			searchCallback(method, data);
 		},
