@@ -23,7 +23,7 @@ $("button#search").on("click", function(event){
             username: $("input[name='username']").val()
         },
         dataType: "json",
-		timeout: 10000,
+		timeout: 8000,
 		success: function(data) {
 			searchCallback(method, data);
 		},
@@ -35,7 +35,7 @@ $("button#search").on("click", function(event){
 
 function searchCallback(method, data) {
     $("#loading").removeClass("active");
-	switch(api) {
+	switch(method) {
 	case "SA":
 		showSentimentAnalysis(data);
 		break;
