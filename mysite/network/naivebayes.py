@@ -17,6 +17,7 @@ from collections import OrderedDict
 import base64
 from elasticsearch import Elasticsearch
 import time
+from .elasticsearch_data import queryES
 
 stopwords = set(STOPWORDS)
 module_dir = os.path.dirname(__file__)  # get current dir
@@ -114,50 +115,50 @@ def responseLoad(request):
 	#print("**************" + request.POST.get('method'))
 
 	if request.POST.get('method') == 'sa':
-		Jsonresult = sentiment_analysis("the", "Jhon", "")
+		Jsonresult = sentiment_analysis("the", "", "")
 		return JsonResponse(Jsonresult, safe = False)
 	else:
 		return show_wordcloud()
 
-def queryText(keywords, name, period, index="twitter_data", doc_type="test_type", ip="148.70.167.220"):
-    es = Elasticsearch(ip)
-    if period == '':
-        period = "01/01/2014 12:00 AM - 04/18/2019 11:59 PM"
-    starttime_str = period.split(" - ")[0].replace("/", " ").strip()
-    endtime_str = period.split(" - ")[1].replace("/", " ").strip()
-    print("*" * 30)
-    starttime = time.strftime("%Y-%m-%dT%H:%M", time.strptime(starttime_str, "%m %d %Y %I:%M %p"))
-    endtime = time.strftime("%Y-%m-%dT%H:%M", time.strptime(endtime_str, "%m %d %Y %I:%M %p"))
-    # result = starttime + ";" + endtime
-    # starttime = result.split(';')[0]
-    # endtime = result.split(';')[1]
-    querywithname = {
-        "query": {
-            "bool": {
-                "must": [
-                    {'match': {'text': keywords}},
-                    {'match': {'name': name}},
-                    {"range": {"time": {"gte": starttime, "lt": endtime}}},
-                ]
-            }
-        }
-    }
-    querywithoutname = {
-        "query": {
-            "bool": {
-                "must": [
-                    {'match': {'text': keywords}},
-                    {"range": {"time": {"gte": starttime, "lt": endtime}}},
-                ]
-            }
-        }
-    }
-    query = querywithname
-    if name == '':
-        query = querywithoutname
-    allDoc = es.search(index=index, body=query)
-    list = allDoc['hits']['hits']
-    return list
+# def queryText(keywords, name, period, index="twitter_data", doc_type="test_type", ip="148.70.167.220"):
+#     es = Elasticsearch(ip)
+#     if period == '':
+#         period = "01/01/2014 12:00 AM - 04/18/2019 11:59 PM"
+#     starttime_str = period.split(" - ")[0].replace("/", " ").strip()
+#     endtime_str = period.split(" - ")[1].replace("/", " ").strip()
+#     print("*" * 30)
+#     starttime = time.strftime("%Y-%m-%dT%H:%M", time.strptime(starttime_str, "%m %d %Y %I:%M %p"))
+#     endtime = time.strftime("%Y-%m-%dT%H:%M", time.strptime(endtime_str, "%m %d %Y %I:%M %p"))
+#     # result = starttime + ";" + endtime
+#     # starttime = result.split(';')[0]
+#     # endtime = result.split(';')[1]
+#     querywithname = {
+#         "query": {
+#             "bool": {
+#                 "must": [
+#                     {'match': {'text': keywords}},
+#                     {'match': {'name': name}},
+#                     {"range": {"time": {"gte": starttime, "lt": endtime}}},
+#                 ]
+#             }
+#         }
+#     }
+#     querywithoutname = {
+#         "query": {
+#             "bool": {
+#                 "must": [
+#                     {'match': {'text': keywords}},
+#                     {"range": {"time": {"gte": starttime, "lt": endtime}}},
+#                 ]
+#             }
+#         }
+#     }
+#     query = querywithname
+#     if name == '':
+#         query = querywithoutname
+#     allDoc = es.search(index=index, body=query)
+#     list = allDoc['hits']['hits']
+#     return list
     
 
 def sentiment_analysis(keyword, name, period):
@@ -173,15 +174,16 @@ def sentiment_analysis(keyword, name, period):
 	#test_entry1 = ['It', 'is', 'better']
 	#test_entry2 = ['abort', 'me']
 	#test_context = set([])
-	textContentList = queryText(keyword, name, period)
+	textContentList = queryES(keyword, name, period)
 	print("*" *30)
 	print(keyword + " " + name + " " + period)
 	print(str(textContentList))
 	for line in textContentList:
+		print("sdfdsfsdfsdfsf" + line)
 		reg = re.compile('\\W*')
 		solveData = reg.split(line['_source']['text'])
-		print(solveData)
-		result =classifyNB(np.array(set_of_words2vec(my_vocab_list, test_entry1)), p0V, p1V, pAb)
+		print("wangbadanwangbadan"+solveData[0])
+		result =classifyNB(np.array(set_of_words2vec(my_vocab_list, solveData)), p0V, p1V, pAb)
 		print(result)
 		positiveCount = 0
 		negativeCount = 0
@@ -197,36 +199,38 @@ def sentiment_analysis(keyword, name, period):
 			print(listP)
 			for word in listP:
 				mydictP = dict()
-				if word in test_entry1:
+				if word in solveData:
 					mydictP[word] += 1
 			#sorted_wordP = sorted(mydictP.items(), key=itemgetter(1), reverse=True)
 			sorted_wordP = str(sorted(mydictP.items(), key=itemgetter(1), reverse=True))
+			print("-----------------------------------"+sorted_wordP)
 			sorted_wordP = re.sub(r'\[', "{", sorted_wordP)
 			sorted_wordP = re.sub(r'\]', "}", sorted_wordP)
 			sorted_wordP = re.sub(r'\'\,', "':", sorted_wordP)
 			sorted_wordP = re.sub(r'\(|\)', "", sorted_wordP)
-			print(sorted_wordP)
+			
 			indexP  = 1
 			for keyP in sorted_wordP:
-				if count == 1:
+				if indexP == 1:
 					wordP1 = keyP
-					wordP1Value = sorted_wordP[keyP]
+					print(sorted_wordP[keyP])
+					wordP1Value = int(sorted_wordP[keyP])
 					indexP += 1
 					continue
-				elif count == 2:
+				elif indexP == 2:
 					wordP2 = keyP
-					wordP2Value = sorted_wordP[keyP]
+					wordP2Value = int(sorted_wordP[keyP])
 					indexP += 1
 					continue
 				else:
 					wordP3 = keyP
-					wordP3Value = sorted_wordP[keyP]
+					wordP3Value = int(sorted_wordP[keyP])
 			otherCountP = sum(sorted_wordP.values()) - sorted_wordP[wordP1] - sorted_wordP[wordP2] - sorted_wordP[wordP3]
 		elif negativeCount > positiveCount:
 			analysisResult = "negative"
 			for word in listN:
 				mydictN = dict()
-				if word in test_entry1:
+				if word in solveData:
 					mydictN[word] += 1
 			#sorted_wordN = sorted(mydictN.items(), key=itemgetter(1), reverse=True)
 			sorted_wordN = str(sorted(mydictN.items(), key=itemgetter(1), reverse=True))
@@ -237,19 +241,19 @@ def sentiment_analysis(keyword, name, period):
 			print(sorted_wordN)
 			indexN = 1
 			for keyN in range(3):
-				if i == 1:
+				if indexN == 1:
 					wordN1 = keyN
-					wordN1Value = sorted_wordN[keyN]
+					wordN1Value = int(sorted_wordN[keyN])
 					indexN +=1
 					continue
-				elif i == 2:
+				elif indexN == 2:
 					wordN2 = keyN
-					wordN2Value = sorted_wordN[keyN]
+					wordN2Value = int(sorted_wordN[keyN])
 					indexN +=1
 					continue
 				else:
 					wordN3 = keyN
-					wordN3Value = sorted_wordN[keyN]
+					wordN3Value = int(sorted_wordN[keyN])
 			otherCountN = sum(sorted_wordP.values() - sorted_wordP[wordN1] - sorted_wordP[wordN2] - sorted_wordP[wordN3])
 		else:
 			analysisResult = "netural"
@@ -328,12 +332,12 @@ def sentiment_analysis(keyword, name, period):
 		"positive": {
 			"total": positiveCount,
 			"words": [wordP1, wordP2, wordP3, "others"],
-			"counts": [wordP1Value, wordP2Value, wordP3Value, otherCountP]
+			"counts": [int(wordP1Value), int(wordP2Value), int(wordP3Value), int(otherCountP)]
 		},
 		"negative": {
 			"total": negativeCount,
 			"words": [wordN1, wordN2, wordN3, "others"],
-			"counts": [wordN1Value, wordN2Value, wordN3Value0, otherCountN]
+			"counts": [int(wordN1Value), int(wordN2Value), int(wordN3Value0), int(otherCountN)]
 		},
 		"netural": {
 			"total": neutralCount

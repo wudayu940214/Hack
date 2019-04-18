@@ -5,7 +5,7 @@ from elasticsearch import Elasticsearch
 import time
 
 
-def qureyText(keywords, name, period, index="twitter_data", doc_type="test_type", ip="148.70.167.220"):
+def queryES(keywords, name, period, index="twitter_data", doc_type="test_type", ip="148.70.167.220"):
     es = Elasticsearch(ip)
     if period == '':
         period = "01/01/2014 12:00 AM - 04/18/2019 11:59 PM"
