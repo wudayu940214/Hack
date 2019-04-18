@@ -4,27 +4,60 @@
     <meta charset="UTF-8">
     <title>form</title>
     <link rel="stylesheet" href="/static/lib/semantic-ui/dist/semantic.min.css"/>
+    <link rel="stylesheet" href="/static/lib/daterangepicker/daterangepicker.css"></script>
     <link rel="stylesheet" href="/static/network.css"/>
     <script type="text/javascript" src="/static/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/lib/daterangepicker/moment.min.js"></script>
+    <script type="text/javascript" src="/static/lib/daterangepicker/daterangepicker.js"></script>
     <script type="text/javascript" src="/static/lib/semantic-ui/dist/semantic.min.js"></script>
     <script type="text/javascript" src="/static/lib/echarts/dist/echarts.min.js"></script>
 </head>
 <body>
-    <div class="ui container" style="margin-top: 3em;">
-        <h1>Social Network Analysis</h1>
-        <div style="margin-top: 3em" class="ui action input">
-          <input type="text" placeholder="Search...">
-          <select class="ui compact selection dropdown">
-            <option selected="" value="twitSA">Twitter Sentiment Analysis</option>
-            <option value="twitWC">Twitter Words Cloud</option>
-            <option value="zhihuNET">Zhihu Network</option>
-          </select>
-          <button class="ui icon button">
-            <i class="search icon"></i>
-          </button>
+    <div class="ui container">
+      <h1>Social Network Analysis</h1>
+      <div class="ui two column grid">
+        <div class="ui segment six wide column">
+          <form class="ui fluid form">
+            <div class="field">
+              <div class="ui pointing below label">
+                Please enter a keyword
+              </div>
+              <input type="text" name="keyword" placeholder="Search..."/>
+            </div>
+            <div class="field">
+              <div class="ui pointing below label">
+                Please select a datetime range
+              </div>
+              <input type="text" name="datetimes" class="form-control pull-right">
+            </div>
+            <div class="field">
+              <div class="ui pointing below label">
+                Search by username (optional)
+              </div>
+              <input type="text" name="username" placeholder="username"/>
+            </div>
+            <div class="field">
+              <div class="ui pointing below label">
+                Select analysis method
+              </div>
+              <select class="ui compact selection dropdown">
+                <option selected="" value="sa">Sentiment Analysis</option>
+                <option value="wc">Words Cloud</option>
+              </select>
+            </div>
+            <button class="ui fluid labeled icon button">
+              <i class="search icon"></i>Search
+            </button>
+          </form>
         </div>
+        <div class="ui ten wide column">
+          <!-- <div class="ui loader"></div> -->
+          <!-- <img class="ui fluid image" src="/static/big-ben.jpg" style="margin-left:2em;max-width: 660px;max-height: 400px"> -->
+          <div id="networkContainer">
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="networkContainer" style="height: 300px; margin-top: 3em"></div>
     <script type="text/javascript" src="/static/network.js"></script>
 </body>
 </html>

@@ -1,15 +1,30 @@
-$("button").on("click", function(event){
+$('input[name="datetimes"]').daterangepicker({
+    timePicker: true,
+    // startDate: moment().startOf('hour'),
+    // endDate: moment().startOf('hour').add(32, 'hour'),
+    locale: {
+      format: 'M/DD hh:mm A'
+    }
+});
+
+
+$("button > .search").on("click", function(event){
 	var method = $('select').dropdown('get value');
     var keyword = $("#searchForTwit").val();
 	$.ajax({
 		url: "responseLoad",
 		type: "POST",
 		contentType: "application/json",
-		data: {method: method, keyword: keyword},
+		data: {
+            method: $('select').dropdown('get value'), 
+            keyword: $("input[name='keyword']").val(), 
+            timeperiod: $("input[name='datetimes']").val(), 
+            username: $("input[name='username']").val()
+        },
         dataType: "json",
-		timeout: 5000,
+		timeout: 10000,
 		success: function(data) {
-			searchCallback(api, data);
+			searchCallback(data);
 		},
 		error: function(xhr,status,error){
 			console.log(error);
@@ -17,20 +32,20 @@ $("button").on("click", function(event){
 	});
 });
 
-function searchCallback(api, data) {
-	switch(api) {
-	case "twitSA":
-		searchTwitSentimentAnalysis(data);
-		break;
-	case "twitWC":
-		searchTwitWordsCloud(data);
-		break;
-	case "ZhihuNET":
-		searchZhihuNetwork(data);
-		break;
-	default:
-		break;
-	}
+function searchCallback(data) {
+	// switch(api) {
+	// case "twitSA":
+	// 	searchTwitSentimentAnalysis(data);
+	// 	break;
+	// case "twitWC":
+	// 	searchTwitWordsCloud(data);
+	// 	break;
+	// case "ZhihuNET":
+	// 	searchZhihuNetwork(data);
+	// 	break;
+	// default:
+	// 	break;
+	// }
 };
 
 function searchZhihuNetwork(data) {
