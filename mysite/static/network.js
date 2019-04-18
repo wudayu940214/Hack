@@ -3,7 +3,7 @@ $('input[name="datetimes"]').daterangepicker({
     // startDate: moment().startOf('hour'),
     // endDate: moment().startOf('hour').add(32, 'hour'),
     locale: {
-      format: 'M/DD hh:mm A'
+      format: 'MM/DD/YYYY hh:mm A'
     }
 });
 
@@ -12,6 +12,7 @@ $("button#search").on("click", function(event){
     $("#networkContainer").empty();
     $("#loading").addClass("active");
 	var method = $('select').dropdown('get value');
+    // var dataType = method === "wc"? "image/jpeg" : "json";
 	$.ajax({
 		url: "responseLoad",
 		type: "POST",
@@ -21,10 +22,10 @@ $("button#search").on("click", function(event){
             timeperiod: $("input[name='datetimes']").val(), 
             username: $("input[name='username']").val()
         },
-        dataType: "json",
+        // dataType: "json",
 		timeout: 8000,
 		success: function(data) {
-			searchCallback(method, JSON.parse(data));
+			searchCallback(method, data);
 		},
 		error: function(xhr,status,error){
 			console.log(error);
@@ -36,7 +37,7 @@ function searchCallback(method, data) {
     $("#loading").removeClass("active");
 	switch(method) {
 	case "sa":
-		showSentimentAnalysis(data);
+		showSentimentAnalysis(JSON.parse(data));
 		break;
 	case "wc":
 		showWordsCloud(data);
@@ -60,9 +61,19 @@ function showSentimentAnalysis(data) {
     option = null;
 
     option = {
+        title: {
+            text: 'Analysis result is '+data.result,
+            left: 'center',
+            textStyle: {
+                color: '#ccc'
+            }
+        },
         legend: {
             orient: 'vertical',
             x: 'left',
+            textStyle: {
+                color: '#ccc'
+            },
             data:[SA.POSITIVE, SA.NEGATIVE, SA.NETURAL]
         },
         series: [
@@ -139,5 +150,5 @@ function showSentimentAnalysis(data) {
 
 function showWordsCloud(data) {
     var $container = $("#networkContainer");
-    $container.append("<img class='ui fluid rounded image' src=" + data.path + "></img>")
+    $container.append("<img class='ui fluid rounded image' src=data:image/jpg;base64," + data + "></img>")
 }

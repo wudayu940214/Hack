@@ -14,7 +14,9 @@ from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 from operator import itemgetter
 from collections import OrderedDict
+import base64
 
+stopwords = set(STOPWORDS)
 module_dir = os.path.dirname(__file__)  # get current dir
 
 def load_dataset():
@@ -112,7 +114,7 @@ def responseLoad(request):
 		total_result = sentiment_analysis()
 		return JsonResponse(total_result, safe = False)
 	else:
-		show_wordcloud()
+		return show_wordcloud()
 	
 def sentiment_analysis():
 	list_sents, list_classes, listP, listN = load_dataset()
@@ -150,12 +152,12 @@ def sentiment_analysis():
 		"positive": {
 			"total": 50,
 			"words": ["word1", "word3", "word3", "others"],
-			"counts": [10, 10, 10]
+			"counts": [10, 10, 10, 10]
 		},
 		"negative": {
 			"total": 40,
 			"words": ["word1", "word3", "word4", "others"],
-			"counts": [10, 10, 10]
+			"counts": [10, 10, 10, 10]
 		},
 		"netural": {
 			"total": 10
@@ -175,14 +177,16 @@ def show_wordcloud():
         max_font_size=40, 
         scale=3,
         random_state=1 # chosen at random by flipping a coin; it was heads
-    ).generate(str(data))
+    ).generate(str("data matt"))
 
     fig = plt.figure()
     plt.axis('off')
     plt.imshow(wordcloud, interpolation="bilinear")
-    plt.show()
+    wordcloud.to_file(os.path.join(module_dir, "rtrwa.jpeg"))
+    f = open(os.path.join(module_dir, "rtrwa.jpeg"), 'rb')
+    base64_data = base64.b64encode(f.read())
+    return HttpResponse(base64_data, content_type='image/jpeg')
 
 
 def index(request):
-	#show_wordcloud()
 	return render(request, 'network.html')
