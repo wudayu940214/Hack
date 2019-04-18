@@ -15,7 +15,6 @@ $("button#search").on("click", function(event){
 	$.ajax({
 		url: "responseLoad",
 		type: "POST",
-		contentType: "application/json",
 		data: {
             method: method, 
             keyword: $("input[name='keyword']").val(), 
@@ -25,7 +24,7 @@ $("button#search").on("click", function(event){
         dataType: "json",
 		timeout: 8000,
 		success: function(data) {
-			searchCallback(method, data);
+			searchCallback(method, JSON.parse(data));
 		},
 		error: function(xhr,status,error){
 			console.log(error);
@@ -36,10 +35,10 @@ $("button#search").on("click", function(event){
 function searchCallback(method, data) {
     $("#loading").removeClass("active");
 	switch(method) {
-	case "SA":
+	case "sa":
 		showSentimentAnalysis(data);
 		break;
-	case "WC":
+	case "wc":
 		showWordsCloud(data);
 		break;
 	default:
@@ -49,7 +48,7 @@ function searchCallback(method, data) {
 
 const SA = {
     POSITIVE: 'positive',
-    NAGETIVE: 'nagetive',
+    NEGATIVE: 'negative',
     NETURAL: 'netural',
     ACTIVE_WORDS: 'active words'
 }
@@ -57,14 +56,14 @@ const SA = {
 function showSentimentAnalysis(data) {
 	var dom = document.getElementById("networkContainer");
 	console.log("**********" + dom);
-    var myNetwork = echarts.init(dom);
+    var myChart = echarts.init(dom);
     option = null;
 
     option = {
         legend: {
             orient: 'vertical',
             x: 'left',
-            data:[SA.POSITIVE, SA.NAGETIVE, SA.NETURAL]
+            data:[SA.POSITIVE, SA.NEGATIVE, SA.NETURAL]
         },
         series: [
             {
@@ -79,7 +78,7 @@ function showSentimentAnalysis(data) {
                 },
                 data:[
                     {value: data.positive.total, name: SA.POSITIVE, selected: true},
-                    {value: data.nagetive.total, name: SA.NAGETIVE},
+                    {value: data.negative.total, name: SA.NEGATIVE},
                     {value: data.netural.total, name: SA.NETURAL}
                 ]
             },
@@ -125,13 +124,16 @@ function showSentimentAnalysis(data) {
                     {value: data.positive.counts[2], name: data.positive.words[2]},
                     {value: data.positive.counts[3], name: data.positive.words[3]},
                     {value: data.positive.counts[4], name: data.positive.words[4]},
-                    {value: data.nagetive.counts[0], name: data.nagetive.words[0]},
-                    {value: data.nagetive.counts[1], name: data.nagetive.words[1]},
-                    {value: data.nagetive.counts[2], name: data.nagetive.words[2]},
-                    {value: data.nagetive.counts[3], name: data.nagetive.words[3]}
+                    {value: data.negative.counts[0], name: data.negative.words[0]},
+                    {value: data.negative.counts[1], name: data.negative.words[1]},
+                    {value: data.negative.counts[2], name: data.negative.words[2]},
+                    {value: data.negative.counts[3], name: data.negative.words[3]}
                 ]
             }
         ]
+    };
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
     }
 };
 
