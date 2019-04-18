@@ -8,15 +8,16 @@ $('input[name="datetimes"]').daterangepicker({
 });
 
 
-$("button > .search").on("click", function(event){
+$("button#search").on("click", function(event){
+    $("#networkContainer").empty();
+    $("#loading").addClass("active");
 	var method = $('select').dropdown('get value');
-    var keyword = $("#searchForTwit").val();
 	$.ajax({
 		url: "responseLoad",
 		type: "POST",
 		contentType: "application/json",
 		data: {
-            method: $('select').dropdown('get value'), 
+            method: method, 
             keyword: $("input[name='keyword']").val(), 
             timeperiod: $("input[name='datetimes']").val(), 
             username: $("input[name='username']").val()
@@ -24,7 +25,7 @@ $("button > .search").on("click", function(event){
         dataType: "json",
 		timeout: 10000,
 		success: function(data) {
-			searchCallback(data);
+			searchCallback(method, data);
 		},
 		error: function(xhr,status,error){
 			console.log(error);
@@ -32,228 +33,109 @@ $("button > .search").on("click", function(event){
 	});
 });
 
-function searchCallback(data) {
-	// switch(api) {
-	// case "twitSA":
-	// 	searchTwitSentimentAnalysis(data);
-	// 	break;
-	// case "twitWC":
-	// 	searchTwitWordsCloud(data);
-	// 	break;
-	// case "ZhihuNET":
-	// 	searchZhihuNetwork(data);
-	// 	break;
-	// default:
-	// 	break;
-	// }
+function searchCallback(method, data) {
+    $("#loading").removeClass("active");
+	switch(api) {
+	case "SA":
+		showSentimentAnalysis(data);
+		break;
+	case "WC":
+		showWordsCloud(data);
+		break;
+	default:
+		break;
+	}
 };
 
-function searchZhihuNetwork(data) {
+const SA = {
+    POSITIVE: 'positive',
+    NAGETIVE: 'nagetive',
+    NETURAL: 'netural',
+    ACTIVE_WORDS: 'active words'
+}
+
+function showSentimentAnalysis(data) {
 	var dom = document.getElementById("networkContainer");
 	console.log("**********" + dom);
     var myNetwork = echarts.init(dom);
     option = null;
-    // myNetwork.hideLoading();
-    var categories = [];
-    for (var i = 0; i < 2; i++) {
-        categories[i] = {
-            name: 'category' + i
-        };
-    }
-    data.nodes.forEach(function (node) {
-        node.itemStyle = null;
-        node.symbolSize = 10;
-        node.value = node.symbolSize;
-        node.category = node.attributes.modularity_class;
-        node.draggable = true;
-    });
+
     option = {
-        title: {
-            text: 'Network Analysis',
-            subtext: 'Default layout',
-            top: 'bottom',
-            left: 'right'
+        legend: {
+            orient: 'vertical',
+            x: 'left',
+            data:[SA.POSITIVE, SA.NAGETIVE, SA.NETURAL]
         },
-        tooltip: {},
-        legend: [{
-            // selectedMode: 'single',
-            data: categories.map(function (a) {
-                return a.name;
-            })
-        }],
-        animation: false,
-        series : [
+        series: [
             {
-                name: 'Les Miserables',
-                type: 'graph',
-                layout: 'force',
-                data: data.nodes,
-                links: data.links,
-                categories: categories,
-                roam: true,
+                type:'pie',
+                selectedMode: 'single',
+                radius: [0, '30%'],
+
                 label: {
                     normal: {
-                        position: 'right'
+                        position: 'inner'
                     }
                 },
-                force: {
-                    repulsion: 100
-                }
+                data:[
+                    {value: data.positive.total, name: SA.POSITIVE, selected: true},
+                    {value: data.nagetive.total, name: SA.NAGETIVE},
+                    {value: data.netural.total, name: SA.NETURAL}
+                ]
+            },
+            {
+                name: SA.ACTIVE_WORDS,
+                type:'pie',
+                radius: ['40%', '55%'],
+                label: {
+                    normal: {
+                        formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                        backgroundColor: '#eee',
+                        borderColor: '#aaa',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        rich: {
+                            a: {
+                                color: '#999',
+                                lineHeight: 22,
+                                align: 'center'
+                            },
+                            hr: {
+                                borderColor: '#aaa',
+                                width: '100%',
+                                borderWidth: 0.5,
+                                height: 0
+                            },
+                            b: {
+                                fontSize: 16,
+                                lineHeight: 33
+                            },
+                            per: {
+                                color: '#eee',
+                                backgroundColor: '#334455',
+                                padding: [2, 4],
+                                borderRadius: 2
+                            }
+                        }
+                    }
+                },
+                data:[
+                    {value: data.positive.counts[0], name: data.positive.words[0]},
+                    {value: data.positive.counts[1], name: data.positive.words[1]},
+                    {value: data.positive.counts[2], name: data.positive.words[2]},
+                    {value: data.positive.counts[3], name: data.positive.words[3]},
+                    {value: data.positive.counts[4], name: data.positive.words[4]},
+                    {value: data.nagetive.counts[0], name: data.nagetive.words[0]},
+                    {value: data.nagetive.counts[1], name: data.nagetive.words[1]},
+                    {value: data.nagetive.counts[2], name: data.nagetive.words[2]},
+                    {value: data.nagetive.counts[3], name: data.nagetive.words[3]}
+                ]
             }
         ]
-    };
-    if (option && typeof option === "object") {
-        myNetwork.setOption(option, true);
-    };
-}
-
-const data = {
-	"nodes" : [
-		{
-            "id":"0",
-            "name":"Myriel",
-            "itemStyle":{
-                "normal":{
-                    "color":"rgb(235,81,72)"
-                }
-            },
-            "symbolSize":28.685715,
-            "attributes":{
-                "modularity_class":0
-            }
-        },
-        {
-            "id":"1",
-            "name":"Napoleon",
-            "itemStyle":{
-                "normal":{
-                    "color":"rgb(236,81,72)"
-                }
-            },
-            "symbolSize":4,
-            "attributes":{
-                "modularity_class":0
-            }
-        },
-        {
-            "id":"2",
-            "name":"MlleBaptistine",
-            "itemStyle":{
-                "normal":{
-                    "color":"rgb(236,81,72)"
-                }
-            },
-            "symbolSize":9.485714,
-            "attributes":{
-                "modularity_class":1
-            }
-        },
-        {
-            "id":"3",
-            "name":"MmeMagloire",
-            "itemStyle":{
-                "normal":{
-                    "color":"rgb(236,81,72)"
-                }
-            },
-            "symbolSize":9.485714,
-            "attributes":{
-                "modularity_class":1
-            }
-        },
-        {
-            "id":"4",
-            "name":"CountessDeLo",
-            "itemStyle":{
-                "normal":{
-                    "color":"rgb(236,81,72)"
-                }
-            },
-            "symbolSize":4,
-            "attributes":{
-                "modularity_class":0
-            }
-        },
-        {
-            "id":"5",
-            "name":"Geborand",
-            "itemStyle":{
-                "normal":{
-                    "color":"rgb(236,81,72)"
-                }
-            },
-            "symbolSize":4,
-            "attributes":{
-                "modularity_class":0
-            }
-        }
-	],
-	"links" : [
-		{
-            "id":"0",
-            "name":null,
-            "source":"1",
-            "target":"0",
-            "lineStyle":{
-                "normal":{
-
-                }
-            }
-        },
-        {
-            "id":"1",
-            "name":null,
-            "source":"2",
-            "target":"0",
-            "lineStyle":{
-                "normal":{
-
-                }
-            }
-        },
-        {
-            "id":"2",
-            "name":null,
-            "source":"3",
-            "target":"0",
-            "lineStyle":{
-                "normal":{
-
-                }
-            }
-        },
-        {
-            "id":"3",
-            "name":null,
-            "source":"3",
-            "target":"2",
-            "lineStyle":{
-                "normal":{
-
-                }
-            }
-        },
-        {
-            "id":"4",
-            "name":null,
-            "source":"4",
-            "target":"0",
-            "lineStyle":{
-                "normal":{
-
-                }
-            }
-        },
-        {
-            "id":"5",
-            "name":null,
-            "source":"5",
-            "target":"0",
-            "lineStyle":{
-                "normal":{
-
-                }
-            }
-        }
-	]
+    }
 };
+
+function showWordsCloud(data) {
+    var $container = $("#networkContainer");
+    $container.append("<img class='ui fluid rounded image' src=" + data.path + "></img>")
+}

@@ -17,7 +17,7 @@
       <h1>Social Network Analysis</h1>
       <div class="ui two column grid">
         <div class="ui segment six wide column">
-          <form class="ui fluid form">
+          <div class="ui fluid form">
             <div class="field">
               <div class="ui pointing below label">
                 Please enter a keyword
@@ -45,15 +45,15 @@
                 <option value="wc">Words Cloud</option>
               </select>
             </div>
-            <button class="ui fluid labeled icon button">
+            <button id="search" class="ui fluid labeled icon button">
               <i class="search icon"></i>Search
             </button>
-          </form>
+          </div>
         </div>
-        <div class="ui ten wide column">
-          <!-- <div class="ui loader"></div> -->
+        <div class="ui ten wide column" >
+          <div id="loading" class="ui loader"></div>
           <!-- <img class="ui fluid image" src="/static/big-ben.jpg" style="margin-left:2em;max-width: 660px;max-height: 400px"> -->
-          <div id="networkContainer">
+          <div id="networkContainer" style="margin-left: 2em;height: 413px;">
           </div>
         </div>
       </div>
