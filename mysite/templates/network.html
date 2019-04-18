@@ -11,13 +11,37 @@
     <script type="text/javascript" src="/static/lib/daterangepicker/daterangepicker.js"></script>
     <script type="text/javascript" src="/static/lib/semantic-ui/dist/semantic.min.js"></script>
     <script type="text/javascript" src="/static/lib/echarts/dist/echarts.min.js"></script>
+    <style type="text/css">
+      .landing-image {
+          background-image: url('/static/c.png');
+          background-size: 100% 100%;
+          background-repeat: repeat-y;
+          background-attachment: fixed;
+      }
+
+      </style>
 </head>
+<!-- <<<<<<< Updated upstream
 <body>
     <div class="ui container">
       <h1>Social Network Analysis</h1>
       <div class="ui two column grid">
         <div class="ui segment six wide column">
           <div class="ui fluid form">
+======= -->
+<body >
+    <!-- <img class="ui fluid image" src="a.png"> -->
+    <div class="landing-image" >
+    <div class="ui container" >
+        <div class="ui text container">
+            <br>
+      <h1 style="color:lavender; text-shadow:2px 2px #acacac;">Social Network Analysis</h1>
+        </div>
+        <br>
+        <br>
+      <div class="ui container two column grid">
+        <div class="ui  container segment six wide column">
+          <div class="ui fluid form"> 
             <div class="field">
               <div class="ui pointing below label">
                 Please enter a keyword
@@ -51,12 +75,17 @@
           </div>
         </div>
         <div class="ui ten wide column" >
-          <div id="loading" class="ui loader"></div>
+          <div id="loading" class="ui loader massive"></div>
           <!-- <img class="ui fluid image" src="/static/big-ben.jpg" style="margin-left:2em;max-width: 660px;max-height: 400px"> -->
           <div id="networkContainer" style="margin-left: 2em;height: 413px;">
           </div>
         </div>
       </div>
+      </div>
+      <br>
+      <br>
+      <br>
+      <br><br><br><br><br><br><br><br><br><br><br><br>
     </div>
     <script type="text/javascript" src="/static/network.js"></script>
 </body>
