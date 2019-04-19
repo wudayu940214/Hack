@@ -55,6 +55,18 @@ function showSentimentAnalysis(data) {
 	console.log("**********" + dom);
     var myChart = echarts.init(dom);
     option = null;
+    data =  {
+        "result": netural,
+        "positive": {
+            "total": 128
+        },
+        "negative": {
+            "total": 66
+        },
+        "netural": {
+            "total": 310
+        }
+    }
 
     option = {
         title: {
