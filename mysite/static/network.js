@@ -12,7 +12,6 @@ $("button#search").on("click", function(event){
     $("#networkContainer").empty();
     $("#loading").addClass("active");
 	var method = $('select').dropdown('get value');
-    // var dataType = method === "wc"? "image/jpeg" : "json";
 	$.ajax({
 		url: "responseLoad",
 		type: "POST",
@@ -22,7 +21,6 @@ $("button#search").on("click", function(event){
             timeperiod: $("input[name='datetimes']").val(), 
             username: $("input[name='username']").val()
         },
-        // dataType: "json",
 		timeout: 8000,
 		success: function(data) {
 			searchCallback(method, data);
@@ -50,8 +48,7 @@ function searchCallback(method, data) {
 const SA = {
     POSITIVE: 'positive',
     NEGATIVE: 'negative',
-    NETURAL: 'netural',
-    ACTIVE_WORDS: 'active words'
+    NETURAL: 'netural'
 }
 
 function showSentimentAnalysis(data) {
@@ -80,23 +77,8 @@ function showSentimentAnalysis(data) {
             {
                 type:'pie',
                 selectedMode: 'single',
-                radius: [0, '30%'],
+                radius: [0, '55%'],
 
-                label: {
-                    normal: {
-                        position: 'inner'
-                    }
-                },
-                data:[
-                    {value: data.positive.total, name: SA.POSITIVE, selected: true},
-                    {value: data.negative.total, name: SA.NEGATIVE},
-                    {value: data.netural.total, name: SA.NETURAL}
-                ]
-            },
-            {
-                name: SA.ACTIVE_WORDS,
-                type:'pie',
-                radius: ['40%', '55%'],
                 label: {
                     normal: {
                         formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
@@ -130,15 +112,9 @@ function showSentimentAnalysis(data) {
                     }
                 },
                 data:[
-                    {value: data.positive.counts[0], name: data.positive.words[0]},
-                    {value: data.positive.counts[1], name: data.positive.words[1]},
-                    {value: data.positive.counts[2], name: data.positive.words[2]},
-                    {value: data.positive.counts[3], name: data.positive.words[3]},
-                    {value: data.positive.counts[4], name: data.positive.words[4]},
-                    {value: data.negative.counts[0], name: data.negative.words[0]},
-                    {value: data.negative.counts[1], name: data.negative.words[1]},
-                    {value: data.negative.counts[2], name: data.negative.words[2]},
-                    {value: data.negative.counts[3], name: data.negative.words[3]}
+                    {value: data.positive.total, name: SA.POSITIVE, selected: true},
+                    {value: data.negative.total, name: SA.NEGATIVE},
+                    {value: data.netural.total, name: SA.NETURAL}
                 ]
             }
         ]
