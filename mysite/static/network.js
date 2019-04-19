@@ -21,7 +21,6 @@ $("button#search").on("click", function(event){
             timeperiod: $("input[name='datetimes']").val(), 
             username: $("input[name='username']").val()
         },
-		timeout: 8000,
 		success: function(data) {
 			searchCallback(method, data);
 		},
