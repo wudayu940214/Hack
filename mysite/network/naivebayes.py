@@ -179,6 +179,9 @@ def sentiment_analysis(keyword, name, period):
 	# print("*" *30)
 	# print(keyword + " " + name + " " + period)
 	# print(str(textContentList))
+	positiveCount = 0
+	negativeCount = 0
+	neutralCount = 0
 	for line in textContentList:
 		print("sdfdsfsdfsdfsf" + str(line))
 		#reg = re.compile('\\W*')
@@ -193,9 +196,6 @@ def sentiment_analysis(keyword, name, period):
 		#print(solveData)
 		result =classifyNB(np.array(set_of_words2vec(my_vocab_list, alldata)), p0V, p1V, pAb)
 		print(result)
-		positiveCount = 0
-		negativeCount = 0
-		neutralCount = 0
 		if result == 1:
 			positiveCount += 1
 		elif result == 0:
